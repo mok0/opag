@@ -1,0 +1,63 @@
+Version 0.8.0:
+* The preprocessing directives #if, #ifdef and #endif can be used in the
+  definition section of the input file. They are put around the parsing
+  code for the corresponding options, so that code which recognizes some
+  options conditionally can be generated.
+
+Version 0.7.2:
+* Cleanup of the code and build infrastructure. Reorganization of the
+  directory layout in the source package.
+
+Version 0.7.1:
+* Fixed a typo in the manual page.
+
+Version 0.7.0:
+* Code which can be used in programs with Native Language Support can be
+  generated.
+* No non-ASCII characters appear in code examples in the manual page,
+  even if viewed in non-ASCII locales.
+
+Version 0.6.4:
+* When generating C++ code, exceptions are constructed directly from a
+  ::std::string instead of an intermediate stream object.  C++ code that
+  defines its own error text macros needs to be modified, as described
+  in the section "Error text macros" in the manual page.
+
+Version 0.6.3:
+* Bug fix: Identifiers which contain underscores are no longer rejected.
+
+Version 0.6.2:
+* Generated C++ code can be put into a namespace.
+* Single character variants of most command line options are available.
+
+Version 0.6.1:
+* The name of the parsing function can be chosen with a command line
+  option.
+* When generating C++ code, the name of the exception thrown in the case
+  of an error can be specified with a command line option.
+
+Version 0.6.0:
+* It is possible to generate C++ code instead of C code. The interface
+  and error reporting mechanism are different; see the manual page for
+  details.
+* Option and argument variables are now initialized to zero.
+* Minor bug fixes.
+* Minor spelling mistakes in the manual page corrected.
+
+Version 0.5.0:
+* The generated code can use a structure instead of global variables.
+
+Version 0.4:
+* The prefixes of the option and argument variables are no longer
+  hardcoded to `opt_' and `arg_', but can be specified when invoking opag.
+* The possible program exit statuses are documented in the manual page.
+
+Version 0.3:
+* A manual page is provided.
+
+Version 0.2:
+* The program invocation name is passed to the generated parsing
+  function as a separate parameter.
+
+Version 0.1:
+* First release.

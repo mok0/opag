@@ -1,0 +1,184 @@
+2005-05-08  Martin Dickopp  <martin@zero-based.org>
+
+	* opag.1.in: Document preprocessor directives in the definition
+	section of the input file.
+	* Version 0.8.0.
+
+2005-05-07  Martin Dickopp  <martin@zero-based.org>
+
+	* Changed all occurrences of my e-mail address to
+	`martin@zero-based.org'.
+	* parse.c (parse_file): Parse `#if', `#ifdef' and `#endif' in
+	the definition section of the input file.
+	* output.c: Replace `fputc' with `putc'.
+	* output.c (write_pp_directives): New function.
+	* output.c (generate_header, generate_code): Emit preprocessor
+	directives specified in the definition section of the input file.
+
+2005-01-14  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* src/options.opag: More verbose version text.
+
+2004-10-08  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* configure.ac, opag.1.in: Remove `PACKAGE_BUGREPORT_ROFF',
+	hard-code bug reporting address.
+	* src, man: New directories for the source code and manual page,
+	respectively.
+	* acinclude.m4: Remove `MD_AH_DEFAULT' and `MD_CHECK_TYPE'; move
+	functionality to new file `src/stdinc.h'.
+	* src/fileread.c, src/opag.c, src/options.opag, src/output.c,
+	src/parse.c, src/util.c: Include `stdinc.h'.
+	* src/qsort.c: Make sure `size_t' is defined.
+	* Version 0.7.2.
+
+2004-10-05  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* Makefile.am: Don't prefix dependencies with `$(srcdir)/'.
+
+2004-09-28  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* Version 0.7.1.
+
+2004-09-27  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* opag.1.in: Use \(dq for quotes in arguments.
+
+2004-09-26  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* output.c (generate_code): Cast value of type `size_t' to
+	`unsigned int' when used with printf "%u" specifier.
+	* output.c (write_help_text_macro): Renamed to `write_help_text'.
+	Writing of `#define' line moved out of the function.
+	* output.c (write_help_text): Omit spaces directly before a
+	newline.
+	* configure.ac, opag.1.in: New variable `PACKAGE_BUGREPORT_ROFF'
+	which quotes the `-' character in the bug reporting e-mail
+	address.
+	* opag.1.in: Make sure no non-ASCII characters appear in code
+	examples.
+	* options.opag: New options `--nls-error-text',
+	`--nls-help-strings', `--nls-help-text'.
+	* opag.c (main): Verify argument to `--nls-error-text',
+	`--nls-help-strings', `--nls-help-text' command line options.
+	* output.c (generate_code): Implement `--nls-error-text',
+	`--nls-help-strings', `--nls-help-text' command line options.
+	* Version 0.7.0.
+
+2004-08-20  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* opag.1.in: Use correct `-' character in URL.
+
+2004-05-23  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* output.c (generate_code): When generating C++ code, use
+	::std::string expressions to construct exceptions directly
+	(instead of an intermediate stream object).
+	* opag.1.in: Document above changes.
+	* Version 0.6.4.
+
+2004-05-22  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* util.c (c_identifier): Allow underscores in identifiers.
+	* util.c (cxx_scoped_identifier): Likewise.
+	* Version 0.6.3.
+
+2004-05-20  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* output.c (generate_code): Fully qualify std namespace in
+	generated C++ code (i.e. `::std::' instead of `std::').
+	* output.c (generate_code): Enable exceptions for
+	::std::ostringstream in generated C++ code.
+	* options.opag: Short option character for all command line
+	options except `--help' and `--version'.
+	* options.opag: New option `--namespace'.
+	* opag.1.in: Document above command line option changes.
+	* opag.c (main): Verify argument to `--namespace' command line
+	option.
+	* output.c (generate_header, generate_code): Implement
+	`--namespace' command line option.
+	* Version 0.6.2.
+
+2004-03-07  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* util.c, util.h: New function `cxx_scoped_identifier'.
+	* options.opag: New options `--function-name' and
+	`--exception-name'.
+	* output.c (generate_header, generate_code): Use function name
+	specified with the `--function-name' option. Use exception name
+	specified with the `--exception-name' option.
+	* opag.1.in: Document `--function-name' and `--exception-name'
+	options.
+	* opag.c (main): Refer to "C++" instead of "C" in error messages
+	if option `--cxx' has been specified.
+	* Version 0.6.1.
+
+2004-02-17  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* output.c (generate_code): Use stringstreams to initialize error
+	messages in C++ code.
+	* fileread.c (file_read): End error messages with a newline.
+	* opag.1.in: Document `--cxx' option.
+	* Version 0.6.0.
+
+2004-02-13  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* options.opag: New option `--cxx'.
+	* output.c (generate_header, generate_code): Generate C++ code if
+	option `--cxx' has been specified.
+	* opag.c (main): Make sure `--glibc' and `--cxx' are not used
+	together.
+	* output.c (generate_code): Initialize option and argument
+	variables to zero.
+
+2004-01-31  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* opag.1.in: Document `--struct' option.
+	* Version 0.5.0.
+
+2004-01-26  Martin Dickopp  <martin-opag@zero-based.org>
+
+	* Changed all occurrences of my e-mail address to
+	`martin-opag@zero-based.org'.
+
+2004-01-24  Martin Dickopp  <martin@zero-based.org>
+
+	* options.opag, opag.c, output.c: Generated code can use a struct
+	instead of global variables.
+
+2004-01-24  Martin Dickopp  <martin@zero-based.org>
+
+	* opag.1.in: Document program exit status.
+	* util.c, util.h: New function `c_identifier'.
+	* options.opag, opag.c, output.c: Name prefixes of option and
+	argument variables can be specified as command line options.
+	* output.c (generate_header, generate_code): Correct comments in
+	generated code.
+	* Version 0.4.
+
+2004-01-21  Martin Dickopp  <martin@zero-based.org>
+
+	* chartype.h: Removed casts.
+	* output.c: Get rid of wrapper macros for output functions.
+	* output.c (generate_code): Generate slightly more efficient code.
+
+2003-12-22  Martin Dickopp  <martin@zero-based.org>
+
+	* Version 0.3.
+
+2003-12-20  Martin Dickopp  <martin@zero-based.org>
+
+	* opag.1.in: New manual page.
+
+2003-11-16  Martin Dickopp  <martin@zero-based.org>
+
+	* output.c (generate_header, generate_code): Pass program
+	invocation name as a separate parameter to the generated parsing
+	function.
+	* opag.c (main): Adapted to above change.
+	* Version 0.2.
+
+2003-08-23  Martin Dickopp  <martin@zero-based.org>
+
+	* Version 0.1.
+

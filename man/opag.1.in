@@ -1,0 +1,768 @@
+.\" This file is part of opag, an option parser generator.
+.\" Copyright (C) 2003, 2004, 2005 Martin Dickopp
+.
+.\" This Program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published
+.\" by the Free Software Foundation; either version 2 of the License,
+.\" or (at your option) any later version.
+.
+.\" This Program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
+.\" USA.
+.
+.TH OPAG 1 08-May-2005 "@PACKAGE_STRING@" "User Commands"
+.SH NAME
+opag \- option parser generator
+.SH SYNOPSIS
+.B opag
+.RI [ OPTION ]...\&
+.RI [ INPUT-FILE
+.RI [ CODE-OUTPUT-FILE
+.RI [ HEADER-OUTPUT-FILE ]]]
+.SH DESCRIPTION
+Opag generates C or C++ code which parses command line options. It takes
+as input a description of the command line options you want your program
+to support (see
+.B "INPUT FILE FORMAT"
+below). The output is a C or C++ function which finds these options in
+an array of strings (typically
+.IR argv ,
+the second parameter of the
+.B main()
+function) and sets variables accordingly. Short (single character) as well
+as long (GNU style) options are supported.
+.PP
+It is also possbile to associate a help string with each option. Opag uses
+these to create a macro which expands to a string containing a nicely
+formatted description of the options.
+.PP
+If
+.I INPUT-FILE
+is
+.BR \-,
+or if it is omitted, standard input is read. Likewise, if
+.I CODE-OUTPUT-FILE
+is specified as
+.B \-
+or not at all, the generated code is written to standard output. If
+.I HEADER-OUTPUT-FILE
+is omitted, no header file is generated at all.
+.PP
+The default is to generate C code. Generation of C++ can enabled with
+the
+.B \-\-cxx
+command line option (see
+.B OPTIONS
+below).
+.SH OPTIONS
+.IP "\fB\-g\fR, \fB\-\-glibc\fR"
+Generate code that makes use of the
+.B getopt_long()
+function if it is compiled with headers from the GNU C library. The
+generated code uses preprocessor conditionals to test this, so the
+portability is not reduced.
+.IP "\fB\-G\fR, \fB\-\-gcc\fR"
+Generate code the makes use of extensions provided by the GNU C compiler,
+if this compiler is used. The generated code uses preprocessor
+conditionals to test this, so the portability is not reduced.
+.IP "\fB\-C\fR, \fB\-\-cxx\fR"
+Generate C++ code instead of C code. This option cannot be used together
+with
+.BR \-\-glibc .
+.IP "\fB\-s\fR[\fITAG\fR], \fB\-\-struct\fR[=\fITAG\fR]"
+Instead of storing the results in global variables, use a structure with
+tag
+.IR TAG .
+If
+.I TAG
+is omitted,
+.B options
+is used as a default.
+.IP "\fB\-f \fIIDENTIFIER\fR, \fB\-\-function\-name\fR=\fIIDENTIFIER\fR"
+Use
+.I IDENTIFIER
+instead of
+.B parse_options
+as the name of the parsing function.
+.IP "\fB\-\-nls\-error\-text\fR[=\fIIDENTIFIER\fR]"
+Wrap each error text macro (see
+.B "Error text macros"
+in section
+.B "INPUT FILE FORMAT"
+below) in a call to the function
+.I IDENTIFIER
+.RB ( gettext
+by default). The generated code can be used in programs with Native
+Language Support.
+.IP "\fB\-\-nls\-help\-strings\fR[=\fIIDENTIFIER\fR]"
+Wrap each help string macro (see
+.B "Help string macros"
+in section
+.B "INPUT FILE FORMAT"
+below) in a call to the function
+.I IDENTIFIER
+.RB ( gettext
+by default). The generated code can be used in programs with Native
+Language Support.
+.IP "\fB\-\-nls\-help\-text\fR[=\fIIDENTIFIER\fR]"
+Wrap the complete help string macro
+.B STR_HELP
+(see
+.B "Help string macros"
+in section
+.B "INPUT FILE FORMAT"
+below) in a call to the function
+.I IDENTIFIER
+.RB ( gettext
+by default). The generated code can be used in programs with Native
+Language Support.
+.IP "\fB\-e \fITYPENAME\fR, \fB\-\-exception\-name\fR=\fITYPENAME\fR"
+When generating C++ code, throw
+.I TYPENAME
+instead of
+.B ::std::runtime_error
+if an error is encountered.
+.I TYPENAME
+must have a constructor which allows it to be instantiated with a
+.B ::std::string
+argument.
+.IP "\fB\-n \fIIDENTIFIER\fR, \fB\-\-namespace\fR=\fIIDENTIFIER\fR"
+When generating C++ code, put the option parsing function as well as the
+global variables or the structure declaration into namespace
+.IR IDENTIFIER .
+.IP "\fB\-O \fIPREFIX\fR, \fB\-\-option\-prefix\fR=\fIPREFIX\fR"
+Prefix option variables (see
+.B Results
+in section
+.B "CODE OUTPUT"
+below) with
+.IR PREFIX .
+The default is
+.BR opt_ .
+.IP "\fB\-A \fIPREFIX\fR, \fB\-\-argument\-prefix\fR=\fIPREFIX\fR"
+Prefix argument variables (see
+.B Results
+in section
+.B "CODE OUTPUT"
+below) with
+.IR PREFIX .
+The default is
+.BR arg_ .
+.IP "\fB\-\-help\fR"
+Display a short help text and exit immediately.
+.IP "\fB\-\-version\fR"
+Display version information and exit immediately.
+.SH "INPUT FILE FORMAT"
+The input file contains three sections, which are separated by two percent
+characters
+.RB ( %% )
+on a line by themselves. They are referred to as header, definition
+section, and footer. The footer can be omitted.
+.PP
+The header and footer (if present) are copied literally to the top and
+bottom of the code output file, respectively. Since the generated code
+calls various library functions, the header section must at least
+contain preprocessor directives to include
+.B <stdio.h>
+and
+.B <string.h>
+if C code is generated, or
+.BR <cstring> ,
+.BR <string> ,
+and
+.B <stdexcept>
+if C++ code is generated.
+.RB ( <stdexcept>
+might not be required if the
+.B \-\-exception\-name
+command line option is used.)
+.PP
+The definition section contains a number of option definitions, each on a
+separate line (see
+.B "Option definition format"
+below).
+.PP
+Additionally, it may contain lines beginning with
+.BR #if ,
+.BR #ifdef ,
+or
+.BR #endif .
+These C or C++ preprocessor directives are put around the parsing code
+for the corresponding options, so that code which recognizes some
+options conditionally can be generated. The help string macros (see
+.B "Help string macros"
+below) are not affected by the preprocessor directives.
+.SS "Option definition format"
+An option definition consists of an optional short option character, a
+long option name, an optional help string, and optional flags. These
+elements are separated by spaces or tabs.
+.PP
+The short option character must be in the leftmost column, if it is
+present. Otherwise, the definition line must begin with a space or tab
+character.
+.PP
+The long option name is the only element which is not optional. It may
+contain alphanumeric characters and dashes
+.RB ( \- ).
+.PP
+The help string is C string enclosed in quotation marks
+.RB ( \(dq ).
+The section
+.B "Help string macros"
+below describes how these help strings are used.
+.PP
+Each flag is one of the keywords
+.BR reqarg ,
+.BR optarg ,
+or
+.BR return .
+.B reqarg
+and
+.B optarg
+indicate that the option requires or optionally takes an argument,
+respectively. If the parsing function encounters an option with the
+.B return
+flag, it returns immediately, as if no further options were present.
+.SS "Error text macros"
+If C code is generated, the parsing function prints an error message on
+stderr if it encounters an error. The text that is printed can be
+modified by a macro definitions in the header section. Each macro is
+used as a format string in the
+.B fprintf()
+function.
+.PP
+The format string must contain two directives. The first one, which must
+be a string directive, is replaced by the program name. The second one,
+which must be string directive for long options and a character directive
+for short options, is replaced by the option name or character.
+.PP
+If C++ code is generated, the parsing function throws a
+.B ::std::runtime_error
+exception (or a configurable exception if the
+.B \-\-exception\-name
+command line option is used) if it encounters an error. The text
+associated with the exception can be modified by a macro definitions in
+the header section.  Each macro should expand to an expression of type
+.BR ::std::string .
+The expressions
+.B option
+and
+.B *option
+can be used to refer to the long option name and short option character,
+respectively.
+.PP
+The following error text macros are recognized:
+.IP "STR_ERR_UNKNOWN_LONG_OPT"
+C default: "%s: unrecognized option \(ga\-\-%s\(aq\en"
+.br
+C++ default: ::std::string ("unrecognized option \(ga\-\-").append (option).append (1, \(aq\e\(aq\(aq)
+.IP "STR_ERR_LONG_OPT_AMBIGUOUS"
+C default: "%s: option \(ga\-\-%s\(aq is ambiguous\en"
+.br
+C++ default: ::std::string ("option \(ga\-\-").append (option).append ("\(aq is ambiguous")
+.IP "STR_ERR_MISSING_ARG_LONG"
+C default: "%s: option \(ga\-\-%s\(aq requires an argument\en"
+.br
+C++ default: ::std::string ("option \(ga\-\-").append (option).append ("\(aq requires an argument")
+.IP "STR_ERR_UNEXPEC_ARG_LONG"
+C default: "%s: option \(ga\-\-%s\(aq doesn\(aqt allow an argument\en"
+.br
+C++ default: ::std::string ("option \(ga\-\-").append (option).append ("\(aq doesn\(aqt allow an argument")
+.IP "STR_ERR_UNKNOWN_SHORT_OPT"
+C default: "%s: unrecognized option \(ga\-%c\(aq\en"
+.br
+C++ default: ::std::string ("unrecognized option \(ga\-").append (1, *option).append (1, \(aq\e\(aq\(aq)
+.IP "STR_ERR_MISSING_ARG_SHORT"
+C default: "%s: option \(ga\-%c\(aq requires an argument\en"
+.br
+C++ default: ::std::string ("option \(ga\-").append (1, *option).append ("\(aq requires an argument")
+.SS "Help string macros"
+For each help string in an option definition, a help string macro which
+can be used in the footer section is generated. The macro is named
+.B STR_HELP_
+followed by the option name with all characters converted to uppercase and
+all dashes converted to underscores
+.RB ( _ ).
+.PP
+Each help string macro expands to a string literal which contains the
+short option character if present, the long option name, and the actual
+help text specified in the definition. A number of spaces is inserted
+between the long option name and the the help text, such that the help
+texts of all options are aligned.
+.PP
+If an option does not take an argument, the help string is the help text.
+Otherwise, the first word (i.e.\& the inital sequence of characters other
+than space) is the argument name; it is attached to the long option name.
+The remainder of the help string is used as the help text.
+.PP
+A macro
+.B STR_HELP
+is also generated. It expands to the concatenation of all help text macros
+and can be used to print a description of all options.
+.SH "CODE OUTPUT"
+.SS "Parsing function in C"
+If the
+.B \-\-struct
+command line option has not been specified, the generated option parsing
+function matches the following prototype:
+.RS
+.BI "int parse_options (const char *" program_name ,
+.B int
+.IB argc ,
+.BI "char **" argv );
+.RE
+The first parameter
+.RB ( program_name )
+is the name of the invoking program; it is used in error messages (see
+.B "Error text macros"
+above). The second parameter
+.RB ( argc )
+is the number of elements in the third parameter
+.RB ( argv ),
+an array of strings which is searched for the options.
+.B argv[0]
+is ignored. Typically, the first two parameters of the
+.B main()
+function are used as the second and third argument of
+.BR parse_options .
+.PP
+If the
+.B \-\-struct
+command line option has been specified, the function matches the
+following prototype:
+.RS
+.B "int parse_options (struct"
+.I TAG
+.BI * options ,
+.BI "const char *" program_name ,
+.B int
+.IB argc ,
+.BI "char **" argv );
+.RE
+The first parameter
+.RB ( options )
+is a pointer to a structure of which the members will be set according
+to the found options. The other parameters have the same meaning as
+documented in the preceding paragraph.
+.SS "Parsing function in C++"
+If the
+.B \-\-struct
+command line option has not been specified, the generated option parsing
+function matches the following prototype:
+.RS
+.B "int parse_options (int"
+.IB argc ,
+.BI "char **" argv );
+.RE
+The first parameter
+.RB ( argc )
+is the number of elements in the second parameter
+.RB ( argv ),
+an array of strings which is searched for the options.
+.B argv[0]
+is ignored. Typically, the first two parameters of the
+.B main()
+function are used as the arguments of
+.BR parse_options .
+.PP
+If the
+.B \-\-struct
+command line option has been specified, the function matches the
+following prototype:
+.RS
+.BI "int parse_options (" TAG
+.BI * options ,
+.B int
+.IB argc ,
+.BI "char **" argv );
+.RE
+The first parameter
+.RB ( options )
+is a pointer to a structure of which the members will be set according
+to the found options. The other parameters have the same meaning as
+documented in the preceding paragraph.
+.SS "Return value"
+The
+.B parse_options()
+function returns the index of the first element in
+.B argv
+which is not an option. If all elements contain options,
+.B argc
+is returned.
+.SS "Error handling"
+If C code is generated and an error occurs, i.e.\& an option in
+.B argv
+does not match the expectations, an error message is printed to stderr
+(cf.\&
+.B "Error text macros"
+above). In this case,
+.B parse_options()
+returns
+.BR \-1 .
+.PP
+If C++ code is generated, the parsing function throws an exception if an
+error is encountered (cf.\&
+.B "Error text macros"
+above). A C++ parsing function therefore never returns a value smaller
+than
+.BR 1 .
+.SS Results
+For each option, a global variable of integer type or a structure member
+of bitfield type (depending on whether the
+.B \-\-struct
+command line option has been specified) is created. Its name is
+.B opt_
+(can be changed with the
+.B \-\-option\-prefix
+command line option) followed by the option name with all characters
+converted to lowercase and all dashes converted to underscores
+.RB ( _ ).
+For every option that is recognized by the parsing function, the
+corresponding variable is set to
+.BR 1 .
+.PP
+For options which take an (optional or required) argument, a second
+global variable or structure member is created. It has the type
+pointer-to-char and the name
+.B arg_
+(can be changed with the
+.B \-\-argument\-prefix
+command line option) followed by the option name with all characters
+converted to lowercase and all dashes converted to underscores. If the
+corresponding option is found, the variable points to the argument, or, if
+no argument is present (for options with optional arguments), it is set to
+.BR NULL .
+.SH "HEADER OUTPUT"
+The header file contains declarations for the global variables, or the
+structure if the command line option
+.B \-\-struct
+has been specified. It also contains a prototype for the
+.B parse_options()
+function.
+.SH "EXIT STATUS"
+The exit status is 0 if the program runs successfully and 1 if the input
+file is invalid. If an error occurs, the exit status is 2.
+.SH EXAMPLES
+.SS "Example input file"
+.nf
+#include <stdio.h>
+.br
+#include <string.h>
+.sp
+%%
+.sp
+f  foo   "an option without argument"
+.br
+b  bar   "[=ARG] an option with an optional argument"  optarg
+.br
+z  baz   "=ARG   an option with a required argument"   reqarg
+.br
+   help  "display this help text and exit"             return
+.sp
+%%
+.sp
+int main (int argc, char *argv [])
+.br
+{
+.br
+    int i;
+.br
+    const char *progname;
+.sp
+    progname = argv [0] != NULL && *(argv [0]) != \(aq\e0\(aq
+.br
+               ? argv [0]
+.br
+               : "opag\-example";
+.sp
+    i = parse_options (progname, argc, argv);
+.sp
+    if (i < 0)
+.br
+    {
+.br
+        fprintf (stderr, "Try \(ga%s \-\-help\(aq for more information.\en",
+.br
+                 progname);
+.br
+        return 1;
+.br
+    }
+.sp
+    if (opt_help)
+.br
+    {
+.br
+        printf ("Usage: %s [OPTION]... [ARGUMENT]...\en\en"
+.br
+                "Options:\en" STR_HELP, progname);
+.br
+        return 0;
+.br
+    }
+.sp
+    puts ("Options:");
+.sp
+    if (opt_foo)
+.br
+        puts ("  \-f, \-\-foo");
+.sp
+    if (opt_bar)
+.br
+    {
+.br
+        fputs ("  \-b, \-\-bar ", stdout);
+.br
+        if (arg_bar != NULL)
+.br
+            printf ("with argument \e"%s\e"\en", arg_bar);
+.br
+        else
+.br
+            puts ("without argument");
+.br
+    }
+.sp
+    if (opt_baz)
+.br
+        printf ("  \-z, \-\-baz with argument \e"%s\e"\en", arg_baz);
+.sp
+    puts ("Non\-option arguments:");
+.sp
+    while (i < argc)
+.br
+        printf ("  \e"%s\e"\en", argv [i++]);
+.sp
+    return 0;
+.br
+}
+.ad
+.SS "Example input file if the \-\-struct command line option is used"
+.nf
+#include <stdio.h>
+.br
+#include <string.h>
+.sp
+%%
+.sp
+f  foo   "an option without argument"
+.br
+b  bar   "[=ARG] an option with an optional argument"  optarg
+.br
+z  baz   "=ARG   an option with a required argument"   reqarg
+.br
+   help  "display this help text and exit"             return
+.sp
+%%
+.sp
+int main (int argc, char *argv [])
+.br
+{
+.br
+    int i;
+.br
+    const char *progname;
+.br
+    struct options options;
+.sp
+    progname = argv [0] != NULL && *(argv [0]) != \(aq\e0\(aq
+.br
+               ? argv [0]
+.br
+               : "opag\-example";
+.sp
+    i = parse_options (&options, progname, argc, argv);
+.sp
+    if (i < 0)
+.br
+    {
+.br
+        fprintf (stderr, "Try \(ga%s \-\-help\(aq for more information.\en",
+.br
+                 progname);
+.br
+        return 1;
+.br
+    }
+.sp
+    if (options.opt_help)
+.br
+    {
+.br
+        printf ("Usage: %s [OPTION]... [ARGUMENT]...\en\en"
+.br
+                "Options:\en" STR_HELP, progname);
+.br
+        return 0;
+.br
+    }
+.sp
+    puts ("Options:");
+.sp
+    if (options.opt_foo)
+.br
+        puts ("  \-f, \-\-foo");
+.sp
+    if (options.opt_bar)
+.br
+    {
+.br
+        fputs ("  \-b, \-\-bar ", stdout);
+.br
+        if (options.arg_bar != NULL)
+.br
+            printf ("with argument \e"%s\e"\en", options.arg_bar);
+.br
+        else
+.br
+            puts ("without argument");
+.br
+    }
+.sp
+    if (options.opt_baz)
+.br
+        printf ("  \-z, \-\-baz with argument \e"%s\e"\en", options.arg_baz);
+.sp
+    puts ("Non\-option arguments:");
+.sp
+    while (i < argc)
+.br
+        printf ("  \e"%s\e"\en", argv [i++]);
+.sp
+    return 0;
+.br
+}
+.ad
+.SS "Example input file if the \-\-cxx command line option is used"
+.nf
+#include <iostream>
+.br
+#include <cstring>
+.br
+#include <string>
+.br
+#include <stdexcept>
+.sp
+%%
+.sp
+f  foo   "an option without argument"
+.br
+b  bar   "[=ARG] an option with an optional argument"  optarg
+.br
+z  baz   "=ARG   an option with a required argument"   reqarg
+.br
+   help  "display this help text and exit"             return
+.sp
+%%
+.sp
+int main (int argc, char *argv [])
+.br
+{
+.br
+    const char *progname;
+.sp
+    progname = argv [0] != 0 && *(argv [0]) != \(aq\e0\(aq
+.br
+               ? argv [0]
+.br
+               : "opag\-example";
+.sp
+    try
+.br
+    {
+.br
+        int i = parse_options (argc, argv);
+.sp
+        if (opt_help)
+.br
+        {
+.br
+            ::std::cout << "Usage: " << progname
+.br
+                        << " [OPTION]... [ARGUMENT]...\en\en"
+.br
+                        << "Options:\en" STR_HELP;
+.br
+            return 0;
+.br
+        }
+.sp
+        ::std::cout << "Options:\en";
+.sp
+        if (opt_foo)
+.br
+            ::std::cout << "  \-f, \-\-foo\en";
+.sp
+        if (opt_bar)
+.br
+        {
+.br
+            ::std::cout << "  \-b, \-\-bar ";
+.br
+            if (arg_bar != 0)
+.br
+                ::std::cout << "with argument \e"" << arg_bar << "\e"\en";
+.br
+            else
+.br
+                ::std::cout << "without argument\en";
+.br
+        }
+.sp
+        if (opt_baz)
+.br
+            ::std::cout << "  \-z, \-\-baz with argument \e""
+.br
+                      << arg_baz << "\e"\en";
+.sp
+        ::std::cout << "Non\-option arguments:\en";
+.sp
+        while (i < argc)
+.br
+            ::std::cout << "  \e"" << argv [i++] << "\e"\en";
+.br
+    }
+.sp
+    catch (::std::runtime_error e)
+.br
+    {
+.br
+        ::std::cerr << progname << ": " << e.what () << "\en"
+.br
+                       "Try \(ga" << progname
+.br
+                    << " \-\-help\(aq for more information.\en";
+.br
+        return 1;
+.br
+    }
+.sp
+    return 0;
+.br
+}
+.ad
+.SH BUGS
+Please report bugs to <martin@zero\-based.org>.
+.SH COPYRIGHT
+Copyright \(co 2002, 2003, 2004, 2005 Martin Dickopp
+.PP
+Opag is free software; it may be copied and/or modified under the terms
+of the GNU General Public License version 2 or (at your option) any
+later version; see the file COPYING in the source package for details.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+.SH "SEE ALSO"
+.BR getopt (3)
+.PP
+The opag homepage:
+http://www.zero\-based.org/software/opag/
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:

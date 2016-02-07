@@ -1,0 +1,24 @@
+Source: opag
+Section: devel
+Priority: optional
+Maintainer: Martin Dickopp <martin@zero-based.org>
+Build-Depends: cdbs, debhelper (>= 4.1.0)
+Standards-Version: 3.6.1
+
+Package: opag
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Command line option parser generator
+ Opag, which stands for "Option Parser Generator", is a program to
+ generate C or C++ code which parses command line options. It takes as
+ input a description of the command line options you want your program
+ to support. The output is a C or C++ function which finds these options
+ in an array of strings (typically "argv", the second parameter of the
+ "main" function) and sets variables accordingly. Short (single
+ character) as well as long (GNU style) options are supported.
+ .
+ It is also possbile to associate a help string with each option. Opag
+ uses these to create a macro which expands to a string containing a
+ nicely formatted description of the options.
+ .
+ Homepage: http://www.zero-based.org/software/opag/
