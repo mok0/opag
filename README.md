@@ -13,7 +13,7 @@ options in an array of strings (typically `argv`, the second parameter
 of the `main` function) and sets variables accordingly. Short (single
 character) as well as long (GNU style) options are supported.
 
-It is also possbile to associate a help string with each option. Opag
+It is also possible to associate a help string with each option. Opag
 uses these to create a macro which expands to a string containing a
 nicely formatted description of the options.
 
