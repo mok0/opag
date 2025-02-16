@@ -11,16 +11,16 @@ dnl but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 dnl even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 dnl PARTICULAR PURPOSE.
 
-AC_PREREQ(2.59)
-AC_INIT([opag], [0.8.0], [martin@zero-based.org])
+AC_PREREQ([2.71])
+AC_INIT([opag],[0.8.0],[martin@zero-based.org])
 AC_CONFIG_SRCDIR([src/opag.c])
 AC_COPYRIGHT([Copyright (C) 2002, 2003, 2004, 2005 Martin Dickopp])
 AM_INIT_AUTOMAKE([gnu no-define std-options 1.9])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 MD_PATH_PROG([opag])
 
-AC_GNU_SOURCE
+AC_USE_SYSTEM_EXTENSIONS
 AC_PROG_CC
 if test "x$ac_cv_prog_cc_stdc" = xno; then
   AC_MSG_ERROR([an ANSI C compiler is required to build this package])
