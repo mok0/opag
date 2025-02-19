@@ -1,3 +1,9 @@
+opag (0.8.0-2) bookworm; urgency=low
+
+  * Updated packaging to debhelper 13
+
+ -- Morten Kjeldgaard <mortenkjeldgaard@gmail.com>  Wed, 19 Feb 2025 19:48:10 +0100
+
 opag (0.8.0-1) unstable; urgency=low
 
   * New upstream release.

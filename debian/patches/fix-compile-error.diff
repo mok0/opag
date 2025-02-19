@@ -1,0 +1,11 @@
+--- a/src/parse.c
++++ b/src/parse.c
+@@ -446,7 +446,7 @@
+                         else
+                             pf->opt [pf->num_opt].arg_string = 0;
+ 
+-                        if (pf->opt [pf->num_opt].arg_string != '\0')
++                        if (pf->opt [pf->num_opt].arg_string != NULL)
+                             pf->opt [pf->num_opt].opt_str_len += strlen (pf->opt [pf->num_opt].arg_string);
+                     }
+                 }

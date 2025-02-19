@@ -1,13 +1,14 @@
 Source: opag
 Section: devel
 Priority: optional
-Maintainer: Martin Dickopp <martin@zero-based.org>
-Build-Depends: cdbs, debhelper (>= 4.1.0)
-Standards-Version: 3.6.1
+Maintainer: Morten Kjeldgaard <mortenkjeldgaard@gmail.com>
+Homepage: http://github.com/mok0/opag
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
 
 Package: opag
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Command line option parser generator
  Opag, which stands for "Option Parser Generator", is a program to
  generate C or C++ code which parses command line options. It takes as
@@ -20,5 +21,3 @@ Description: Command line option parser generator
  It is also possbile to associate a help string with each option. Opag
  uses these to create a macro which expands to a string containing a
  nicely formatted description of the options.
- .
- Homepage: http://www.zero-based.org/software/opag/
