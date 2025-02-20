@@ -1,6 +1,12 @@
+opag (0.8.0-3) trixie; urgency=medium
+
+  * Build for trixie
+
+ -- Morten Kjeldgaard <mortenkjeldgaard@gmail.com>  Thu, 20 Feb 2025 22:43:43 +0100
+
 opag (0.8.0-2) bookworm; urgency=low
 
-  * Updated packaging to debhelper 13
+  * Updated packaging to debhelper 13 and use dch instead of cbds
 
  -- Morten Kjeldgaard <mortenkjeldgaard@gmail.com>  Wed, 19 Feb 2025 19:48:10 +0100
 
