@@ -9,7 +9,7 @@ Standards-Version: 4.6.2
 Package: opag
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Command line option parser generator
+Description: Command line option parser generator for C and C++
  Opag, which stands for "Option Parser Generator", is a program to
  generate C or C++ code which parses command line options. It takes as
  input a description of the command line options you want your program
