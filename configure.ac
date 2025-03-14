@@ -12,7 +12,7 @@ dnl even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 dnl PARTICULAR PURPOSE.
 
 AC_PREREQ([2.71])
-AC_INIT([opag],[0.8.0],[martin@zero-based.org])
+AC_INIT([opag],[0.8.1],[martin@zero-based.org])
 AC_CONFIG_SRCDIR([src/opag.c])
 AC_COPYRIGHT([Copyright (C) 2002, 2003, 2004, 2005 Martin Dickopp])
 AM_INIT_AUTOMAKE([gnu no-define std-options 1.9])
