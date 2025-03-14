@@ -13,5 +13,3 @@
 
 SUBDIRS = src man
 
-EXTRA_DIST = debian/bug/presubj debian/bug/control debian/changelog debian/compat debian/control debian/copyright \
-             debian/opag.dirs debian/opag.install debian/rules
