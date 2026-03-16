@@ -105,4 +105,5 @@ m4/lt~obsolete.m4
 Makefile
 
 /INSTALL
-.pc
+.pc/
+*.tar.gz
