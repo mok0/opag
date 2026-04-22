@@ -446,7 +446,7 @@ parse_file (const char *const infilename, char *buffer, char *const buffer_end, 
                         else
                             pf->opt [pf->num_opt].arg_string = 0;
 
-                        if (pf->opt [pf->num_opt].arg_string != '\0')
+                        if (pf->opt [pf->num_opt].arg_string != NULL)
                             pf->opt [pf->num_opt].opt_str_len += strlen (pf->opt [pf->num_opt].arg_string);
                     }
                 }
