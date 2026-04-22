@@ -19,7 +19,7 @@ AC_DEFUN([MD_PATH_PROG],
 [AS_VAR_PUSHDEF([md_Program], [md_path_$1])dnl
 AS_VAR_SET(md_Program, [])
 AC_ARG_WITH([$1],
-             AC_HELP_STRING([--with-$1=PROGRAM], [use PROGRAM as $1 executable]),
+             AS_HELP_STRING([--with-$1=PROGRAM],[use PROGRAM as $1 executable]),
 [case $withval in
 yes)
   ;;
